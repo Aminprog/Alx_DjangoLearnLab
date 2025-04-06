@@ -1,6 +1,4 @@
-from rest_framework import generics, status
 from rest_framework.views import APIView
-from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.models import Token
 from django.shortcuts import get_object_or_404
@@ -8,6 +6,11 @@ from django.contrib.auth import get_user_model
 from rest_framework.permissions import AllowAny
 from .models import CustomUser
 from .serializers import RegisterSerializer, LoginSerializer, UserSerializer
+from rest_framework import generics, permissions, status
+from rest_framework.response import Response
+
+
+User = get_user_model()
 
 class RegisterView(generics.CreateAPIView):
     permission_classes = [AllowAny]  # <= This is the problem
@@ -33,8 +36,8 @@ class ProfileView(generics.RetrieveUpdateAPIView):
 
 User = get_user_model()
 
-class FollowUserView(APIView):
-    permission_classes = [IsAuthenticated]
+class FollowUserView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, user_id):
         """Follow a specific user."""
@@ -46,8 +49,9 @@ class FollowUserView(APIView):
         return Response({"detail": f"You are now following {user_to_follow.username}"},
                         status=status.HTTP_200_OK)
 
-class UnfollowUserView(APIView):
-    permission_classes = [IsAuthenticated]
+
+class UnfollowUserView(generics.GenericAPIView):
+    permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, user_id):
         """Unfollow a specific user."""
