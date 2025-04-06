@@ -7,7 +7,8 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('accounts.urls')),  # from Task 0
-    path('api/', include('posts.urls')),     # new for posts/comments
+    path('api/', include('posts.urls')),     # new for posts/
+    
 ]
 
 if settings.DEBUG:

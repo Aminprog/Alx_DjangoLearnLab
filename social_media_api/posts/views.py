@@ -1,6 +1,19 @@
 from rest_framework import viewsets, permissions, filters
 from .models import Post, Comment
 from .serializers import PostSerializer, CommentSerializer
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def user_feed(request):
+    """Return a feed of posts from users the current user follows."""
+    user = request.user
+    following_users = user.following.all()  # all the users 'user' follows
+    posts = Post.objects.filter(author__in=following_users).order_by('-created_at')
+    serializer = PostSerializer(posts, many=True)
+    return Response(serializer.data)
 
 # A permission so users can only edit/delete their own posts/comments
 class IsOwnerOrReadOnly(permissions.BasePermission):
